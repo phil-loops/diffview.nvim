@@ -13,6 +13,11 @@ local function render_file(comp, show_path, depth)
 
   comp:add_text(file.status .. " ", hl.get_git_hl(file.status))
 
+  -- Stack drift indicator (code removed downstream) - prefix before filename
+  if file.drift then
+    comp:add_text("⚠️  ", "WarningMsg")
+  end
+
   if depth then
     comp:add_text(string.rep(" ", depth * 2 + 2))
   end
@@ -37,11 +42,6 @@ local function render_file(comp, show_path, depth)
 
   if file.kind == "conflicting" and not (file.stats and file.stats.conflicts) then
     comp:add_text(" !", "DiffviewFilePanelConflicts")
-  end
-
-  -- Stack drift indicator (code removed downstream)
-  if file.drift then
-    comp:add_text(" [drift]", "WarningMsg")
   end
 
   if show_path then
