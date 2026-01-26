@@ -39,6 +39,11 @@ local function render_file(comp, show_path, depth)
     comp:add_text(" !", "DiffviewFilePanelConflicts")
   end
 
+  -- Stack drift indicator (code removed downstream)
+  if file.drift then
+    comp:add_text(" [drift]", "WarningMsg")
+  end
+
   if show_path then
     comp:add_text(" " .. file.parent_path, "DiffviewFilePanelPath")
   end

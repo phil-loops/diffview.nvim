@@ -42,6 +42,7 @@ local fstat_cache = {}
 ---@field merge_ctx vcs.MergeContext?
 ---@field active boolean
 ---@field opened boolean
+---@field drift boolean|nil Stack drift indicator (code removed downstream)
 local FileEntry = oop.create_class("FileEntry")
 
 ---@class FileEntry.init.Opt
