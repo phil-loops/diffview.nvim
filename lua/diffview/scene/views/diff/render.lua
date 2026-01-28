@@ -11,7 +11,14 @@ local function render_file(comp, show_path, depth)
   ---@type FileEntry
   local file = comp.context
 
-  comp:add_text(file.status .. " ", hl.get_git_hl(file.status))
+  -- Replace status letter with ✓ when blessed clean
+  if file.blessed_status == "clean" then
+    comp:add_text("✓ ", "DiagnosticOk")
+  elseif file.blessed_status == "stale" then
+    comp:add_text(file.status .. " ", "DiagnosticWarn")
+  else
+    comp:add_text(file.status .. " ", hl.get_git_hl(file.status))
+  end
 
   -- Stack drift indicator (code removed downstream) - prefix before filename
   if file.drift then
@@ -42,13 +49,6 @@ local function render_file(comp, show_path, depth)
 
   if file.kind == "conflicting" and not (file.stats and file.stats.conflicts) then
     comp:add_text(" !", "DiffviewFilePanelConflicts")
-  end
-
-  -- Blessed review status indicator
-  if file.blessed_status == "clean" then
-    comp:add_text(" [✓ blessed]", "DiagnosticOk")
-  elseif file.blessed_status == "stale" then
-    comp:add_text(" [✗ stale]", "DiagnosticWarn")
   end
 
   if show_path then
