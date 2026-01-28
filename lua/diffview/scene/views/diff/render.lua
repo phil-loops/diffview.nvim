@@ -46,9 +46,9 @@ local function render_file(comp, show_path, depth)
 
   -- Blessed review status indicator
   if file.blessed_status == "clean" then
-    comp:add_text(" ✓", "DiffviewFilePanelInsertions")
+    comp:add_text(" [✓ blessed]", "DiagnosticOk")
   elseif file.blessed_status == "stale" then
-    comp:add_text(" !", "WarningMsg")
+    comp:add_text(" [✗ stale]", "DiagnosticWarn")
   end
 
   if show_path then
