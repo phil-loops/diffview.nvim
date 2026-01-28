@@ -44,6 +44,13 @@ local function render_file(comp, show_path, depth)
     comp:add_text(" !", "DiffviewFilePanelConflicts")
   end
 
+  -- Blessed review status indicator
+  if file.blessed_status == "clean" then
+    comp:add_text(" ✓", "DiffviewFilePanelInsertions")
+  elseif file.blessed_status == "stale" then
+    comp:add_text(" !", "WarningMsg")
+  end
+
   if show_path then
     comp:add_text(" " .. file.parent_path, "DiffviewFilePanelPath")
   end

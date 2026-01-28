@@ -2,6 +2,7 @@ local async = require("diffview.async")
 local lazy = require("diffview.lazy")
 local oop = require("diffview.oop")
 local stack_drift = lazy.require("diffview.stack_drift") ---@module "diffview.stack_drift"
+local stack_blessed_ok, stack_blessed = pcall(require, "custom.stack-blessed")
 
 local CommitLogPanel = lazy.access("diffview.ui.panels.commit_log_panel", "CommitLogPanel") ---@type CommitLogPanel|LazyModule
 local Diff = lazy.access("diffview.diff", "Diff") ---@type Diff|LazyModule
@@ -465,6 +466,17 @@ DiffView.update_files = debounce.debounce_trailing(
     -- Populate stack drift indicators
     for _, file in self.files:iter() do
       file.drift = stack_drift.has_drift(file.path)
+    end
+
+    -- Populate blessed review status
+    if stack_blessed_ok and self.rev_arg then
+      -- rev_arg is "parent..branch" — extract branch name
+      local branch = self.rev_arg:match("%.%.(.+)$")
+      if branch then
+        for _, file in self.files:iter() do
+          file.blessed_status = stack_blessed.file_status(branch, file.path)
+        end
+      end
     end
 
     self.files:update_file_trees()

@@ -43,6 +43,7 @@ local fstat_cache = {}
 ---@field active boolean
 ---@field opened boolean
 ---@field drift boolean|nil Stack drift indicator (code removed downstream)
+---@field blessed_status string|nil "clean" | "stale" | "unblessed" | nil
 local FileEntry = oop.create_class("FileEntry")
 
 ---@class FileEntry.init.Opt
