@@ -258,6 +258,44 @@ function DiffView:prev_file(highlight)
   end
 end
 
+---Change the rev range of this view in place, without closing/reopening.
+---
+---Resolves to the new file list via `update_files`, preserving the view's
+---window layout and the file panel. Cheaper than close+open and avoids
+---buffer flicker; intended for "next branch in a stack" navigation where
+---the caller already knows the new left/right.
+---
+---Clears the existing file arrays in place (rather than reassigning the
+---fields) so `FileDict.sets` references stay valid; otherwise `:len()`
+---returns the stale count and `next_file`/`prev_file` silently bail.
+---
+---@param left Rev
+---@param right Rev
+---@param rev_arg? string Pretty rev string for the file panel header.
+function DiffView:change_range(left, right, rev_arg)
+  self.left = left
+  self.right = right
+  if rev_arg then self.rev_arg = rev_arg end
+
+  if self.panel then
+    self.panel.rev_pretty_name = self.adapter:rev_to_pretty_string(left, right)
+  end
+
+  for _, kind in ipairs({ "conflicting", "working", "staged" }) do
+    local t = self.files[kind]
+    if t then
+      for i = #t, 1, -1 do t[i] = nil end
+    end
+  end
+  -- Defensively rewire sets in case a caller previously reassigned the
+  -- per-kind tables and orphaned the references.
+  self.files.sets = { self.files.conflicting, self.files.working, self.files.staged }
+
+  self.panel.cur_file = nil
+
+  self:update_files()
+end
+
 ---Set the active file.
 ---@param self DiffView
 ---@param file FileEntry
